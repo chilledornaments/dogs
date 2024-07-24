@@ -1,0 +1,9 @@
+# tf
+.terraform
+*.tfstate*
+*.auto.tfvars
+
+# python
+venv
+
+# go
