@@ -1,6 +1,6 @@
 resource "aws_route53_record" "images" {
   zone_id = data.aws_route53_zone.dogs.id
-  name    = "images.${data.aws_route53_zone.dogs.name}"
+  name    = "img.${data.aws_route53_zone.dogs.name}"
   type    = "A"
 
   alias {
