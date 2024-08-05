@@ -31,6 +31,18 @@ resource "aws_s3_bucket_notification" "images_to_link_creator" {
   }
 }
 
+resource "aws_s3_object" "seed_file" {
+  bucket = aws_s3_bucket.images.bucket
+  key = local.image_map_file_name
+  content = ""
+  
+  lifecycle {
+    ignore_changes = [ 
+      content
+     ]
+  }
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "cleanup_uploads" {
 bucket = aws_s3_bucket.images.bucket
 

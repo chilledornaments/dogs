@@ -5,6 +5,8 @@ locals {
     environment  = "production"
   }
 
+  image_map_file_name = "image_map.txt"
+
   link_creator_managed_policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   ]
