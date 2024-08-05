@@ -14,7 +14,7 @@ resource "aws_s3_bucket_policy" "images" {
           AWS = aws_cloudfront_origin_access_identity.images.iam_arn
         }
         Action   = "s3:GetObject"
-        Resource = "${aws_s3_bucket.images.arn}/*"
+        Resource = "${aws_s3_bucket.images.arn}/img/*"
       }
     ]
   })
@@ -26,7 +26,7 @@ resource "aws_s3_bucket_notification" "images_to_link_creator" {
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.link_creator.arn
-    events              = ["S3:ObjectCreated:*"]
+    events              = ["s3:ObjectCreated:*"]
     filter_prefix       = "upload/"
   }
 }
