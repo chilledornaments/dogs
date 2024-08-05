@@ -5,7 +5,7 @@ It copies the image to the `img/` prefix and updates the "image_map.txt" file
 */
 
 resource "aws_cloudwatch_log_group" "link_creator" {
-  name = "/aws/lambda/${aws_lambda_function.link_creator.function_name}"
+  name              = "/aws/lambda/${aws_lambda_function.link_creator.function_name}"
   retention_in_days = 7
   # I'd use KMS key to encrypt this but I don't want to spend the money on a custom KMS key
 }
@@ -50,17 +50,18 @@ resource "aws_iam_role_policy_attachment" "link_creator_managed_policies" {
 }
 
 resource "aws_lambda_function" "link_creator" {
-  function_name = "dog-api-link-creator"
-  role          = aws_iam_role.link_creator.arn
-  filename      = data.archive_file.lambda_seed.output_path
-  runtime       = "python3.11"
-  memory_size   = 256
-  timeout       = 20
-  handler       = "app.handler"
+  function_name                  = "dog-api-link-creator"
+  role                           = aws_iam_role.link_creator.arn
+  filename                       = data.archive_file.lambda_seed.output_path
+  runtime                        = "python3.11"
+  memory_size                    = 256
+  timeout                        = 20
+  handler                        = "app.handler"
+  reserved_concurrent_executions = 1
 
   environment {
     variables = {
-      PYTHONUNBUFFERED: "1"
+      PYTHONUNBUFFERED = "1"
     }
   }
 

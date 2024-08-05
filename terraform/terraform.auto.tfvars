@@ -3,4 +3,4 @@ aws = {
 }
 
 top_level_domain = "chilledornaments.com"
-subdomain = "dogs"
+subdomain        = "dogs"

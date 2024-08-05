@@ -32,44 +32,44 @@ resource "aws_s3_bucket_notification" "images_to_link_creator" {
 }
 
 resource "aws_s3_object" "seed_file" {
-  bucket = aws_s3_bucket.images.bucket
-  key = local.image_map_file_name
+  bucket  = aws_s3_bucket.images.bucket
+  key     = local.image_map_file_name
   content = ""
-  
+
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       content
-     ]
+    ]
   }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "cleanup_uploads" {
-bucket = aws_s3_bucket.images.bucket
+  bucket = aws_s3_bucket.images.bucket
 
-rule {
-  id = "delete-upload"
-  status = "Enabled"
+  rule {
+    id     = "delete-upload"
+    status = "Enabled"
 
-  filter {
-    prefix = "upload/"
+    filter {
+      prefix = "upload/"
+    }
+
+    expiration {
+      days = 2
+    }
   }
 
-  expiration {
-    days = 2
-  }
-}
+  rule {
+    id     = "transition-to-infrequent"
+    status = "Enabled"
 
-rule {
-  id = "transition-to-infrequent"
-  status = "Enabled"
+    filter {
+      prefix = "img/"
+    }
 
-  filter {
-    prefix = "img/"
+    transition {
+      days          = 30 # 30 is minimum
+      storage_class = "STANDARD_IA"
+    }
   }
-
-  transition {
-    days = 30 # 30 is minimum
-    storage_class = "STANDARD_IA"
-  }
-}
 }
