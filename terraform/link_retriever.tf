@@ -74,5 +74,6 @@ resource "aws_lambda_permission" "allow_s3_invoke_link_retriever" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.link_retriever.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.link_retriever.execution_arn}/${aws_api_gateway_stage.v1.stage_name}/${aws_api_gateway_method.link_retriever_get_random.http_method}${aws_api_gateway_resource.link_retriever_api_random.path}"
+  # TODO figure out how to use ${aws_api_gateway_stage.v1.stage_name} instead of `*`
+  source_arn    = "${aws_api_gateway_rest_api.link_retriever.execution_arn}/*/${aws_api_gateway_method.link_retriever_get_random.http_method}${aws_api_gateway_resource.link_retriever_api_random.path}"
 }
