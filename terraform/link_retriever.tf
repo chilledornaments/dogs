@@ -55,6 +55,7 @@ resource "aws_lambda_function" "link_retriever" {
   handler       = "bootstrap"
   memory_size   = 128
   timeout       = 5
+  architectures = [ "arm64" ]
 
   environment {
     variables = {

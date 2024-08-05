@@ -22,7 +22,6 @@ data "aws_iam_policy_document" "link_creator" {
     actions = [
       "s3:Get*",
       "s3:CopyObject",
-      "s3:DeleteObject",
       "s3:PutObject",
     ]
 
