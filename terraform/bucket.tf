@@ -14,8 +14,11 @@ resource "aws_s3_bucket_policy" "images" {
         Principal = {
           AWS = aws_cloudfront_origin_access_identity.images.iam_arn
         }
-        Action   = "s3:GetObject"
-        Resource = "${aws_s3_bucket.images.arn}/img/*"
+        Action = "s3:GetObject"
+        Resource = [
+          "${aws_s3_bucket.images.arn}/img/*",
+          "${aws_s3_bucket.images.arn}/index.html"
+        ]
       }
     ]
   })
