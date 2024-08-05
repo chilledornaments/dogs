@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "images" {
   bucket_prefix = "dog-api"
+  force_destroy = var.destroy_bucket_objects_on_delete
 }
 
 resource "aws_s3_bucket_policy" "images" {

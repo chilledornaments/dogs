@@ -75,4 +75,3 @@ resource "aws_lambda_permission" "allow_s3_invoke_link_retriever" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.link_retriever.arn}/*/${aws_api_gateway_method.link_retriever_get_random.http_method}${aws_api_gateway_resource.link_retriever_api_random.path}"
 }
-
