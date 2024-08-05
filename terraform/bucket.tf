@@ -3,26 +3,45 @@ resource "aws_s3_bucket" "images" {
   force_destroy = var.destroy_bucket_objects_on_delete
 }
 
+data "aws_iam_policy_document" "images_bucket" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = [
+      "${aws_s3_bucket.images.arn}/img/*",
+      "${aws_s3_bucket.images.arn}/index.html"
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [
+        aws_cloudfront_distribution.images.arn
+      ]
+    }
+  }
+}
+
 resource "aws_s3_bucket_policy" "images" {
   bucket = aws_s3_bucket.images.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          AWS = aws_cloudfront_origin_access_identity.images.iam_arn
-        }
-        Action = "s3:GetObject"
-        Resource = [
-          "${aws_s3_bucket.images.arn}/img/*",
-          "${aws_s3_bucket.images.arn}/index.html"
-        ]
-      }
-    ]
-  })
+  policy = data.aws_iam_policy_document.images_bucket.json
 }
+
+resource "aws_s3_bucket_ownership_controls" "images" {
+  bucket = aws_s3_bucket.images.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
 
 # NOTE: only one `aws_s3_bucket_notification` per bucket is supported
 resource "aws_s3_bucket_notification" "images_to_link_creator" {

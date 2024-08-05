@@ -13,6 +13,7 @@ resource "aws_cloudfront_distribution" "images" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
+
   aliases = concat([aws_acm_certificate.images.domain_name], tolist(aws_acm_certificate.images.subject_alternative_names))
 
   origin {
@@ -42,6 +43,8 @@ resource "aws_cloudfront_distribution" "images" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = local.s3_origin_id
     viewer_protocol_policy = "redirect-to-https"
+    compress               = true
+    cache_policy_id        = "CachingOptimized"
     min_ttl                = 86400
     max_ttl                = 31536000
     default_ttl            = 31536000 # cache for a year by default
