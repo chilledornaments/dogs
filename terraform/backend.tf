@@ -3,7 +3,7 @@ terraform {
     organization = "chilledornaments"
 
     workspaces {
-      
+      name = "dog-api"
     }
   }
 }

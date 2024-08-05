@@ -5,9 +5,11 @@ data "aws_route53_zone" "dogs" {
 resource "aws_acm_certificate" "dogs" {
   provider = aws.useast1
 
-  domain_name               = "dogs.chilledornaments.com"
-  subject_alternative_names = "img.dogs.chilledornaments.com"
-  validation_method         = "DNS"
+  domain_name = "dogs.chilledornaments.com"
+  subject_alternative_names = [
+    "img.dogs.chilledornaments.com",
+  ]
+  validation_method = "DNS"
 }
 
 resource "aws_route53_record" "dogs_acm_validation" {

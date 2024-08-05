@@ -16,7 +16,7 @@ resource "aws_cloudfront_distribution" "images" {
   aliases = [] # TODO what domain?
   origin {
     domain_name = aws_s3_bucket.images.bucket_regional_domain_name
-    origin_id   = locals.s3_origin_id
+    origin_id   = local.s3_origin_id
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.images.cloudfront_access_identity_path
@@ -31,7 +31,7 @@ resource "aws_cloudfront_distribution" "images" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.this.arn
+    acm_certificate_arn = aws_acm_certificate.dogs.arn
     ssl_support_method  = "sni-only"
   }
 
