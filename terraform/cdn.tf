@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "images" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
-  aliases = concat([aws_acm_certificate.dogs.domain_name], tolist(aws_acm_certificate.dogs.subject_alternative_names))
+  aliases = concat([aws_acm_certificate.images.domain_name], tolist(aws_acm_certificate.images.subject_alternative_names))
 
   origin {
     domain_name = aws_s3_bucket.images.bucket_regional_domain_name
@@ -32,7 +32,7 @@ resource "aws_cloudfront_distribution" "images" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.dogs.arn
+    acm_certificate_arn      = aws_acm_certificate.images.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }

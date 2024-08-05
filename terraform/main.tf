@@ -5,6 +5,8 @@ locals {
     environment  = "production"
   }
 
+  route53_zone_id = data.aws_route53_zone.dogs.id
+
   image_map_file_name = "image_map.txt"
 
   link_creator_managed_policies = [
