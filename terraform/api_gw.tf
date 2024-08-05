@@ -2,6 +2,10 @@ resource "aws_api_gateway_rest_api" "link_retriever" {
   name                         = "dog-api-link-retriever"
   description                  = "API Gateway in front of link-retriever Lambda"
   disable_execute_api_endpoint = true
+
+  endpoint_configuration {
+    types = [ "REGIONAL" ]
+  }
 }
 
 resource "aws_api_gateway_domain_name" "link_retriever" {
@@ -13,22 +17,28 @@ resource "aws_api_gateway_domain_name" "link_retriever" {
   }
 }
 
-resource "aws_api_gateway_resource" "link_retriever_random" {
+resource "aws_api_gateway_resource" "link_retriever_api" {
   parent_id   = aws_api_gateway_rest_api.link_retriever.root_resource_id
-  path_part   = "api/random"
+  path_part   = "api"
+  rest_api_id = aws_api_gateway_rest_api.link_retriever.id
+}
+
+resource "aws_api_gateway_resource" "link_retriever_api_random" {
+  parent_id   = aws_api_gateway_resource.link_retriever_api.id
+  path_part   = "random"
   rest_api_id = aws_api_gateway_rest_api.link_retriever.id
 }
 
 resource "aws_api_gateway_method" "link_retriever_get_random" {
   authorization = "NONE"
   http_method   = "GET"
-  resource_id   = aws_api_gateway_resource.link_retriever_random.id
+  resource_id   = aws_api_gateway_resource.link_retriever_api_random.id
   rest_api_id   = aws_api_gateway_rest_api.link_retriever.id
 }
 
 resource "aws_api_gateway_integration" "link_retriever_lambda" {
   http_method             = aws_api_gateway_method.link_retriever_get_random.http_method
-  resource_id             = aws_api_gateway_resource.link_retriever_random.id
+  resource_id             = aws_api_gateway_resource.link_retriever_api_random.id
   rest_api_id             = aws_api_gateway_rest_api.link_retriever.id
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
@@ -40,7 +50,7 @@ resource "aws_api_gateway_deployment" "link_retriever" {
 
   triggers = {
     redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.link_retriever_random.id,
+      aws_api_gateway_resource.link_retriever_api_random.id,
       aws_api_gateway_method.link_retriever_get_random.id,
       aws_api_gateway_integration.link_retriever_lambda.id,
     ]))
