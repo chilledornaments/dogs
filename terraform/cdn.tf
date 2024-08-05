@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "images" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
-  aliases = concat([aws_acm_certificate.dogs.domain_name], aws_acm_certificate.dogs.subject_alternative_names)
+  aliases = concat([aws_acm_certificate.dogs.domain_name], tolist(aws_acm_certificate.dogs.subject_alternative_names))
 
   origin {
     domain_name = aws_s3_bucket.images.bucket_regional_domain_name
