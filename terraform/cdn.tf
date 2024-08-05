@@ -50,8 +50,5 @@ resource "aws_cloudfront_distribution" "images" {
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
     cache_policy_id        = data.aws_cloudfront_cache_policy.s3_optimized.id
-    min_ttl                = 86400
-    max_ttl                = 31536000
-    default_ttl            = 31536000 # cache for a year by default
   }
 }
