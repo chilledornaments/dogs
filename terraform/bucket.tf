@@ -11,7 +11,8 @@ data "aws_iam_policy_document" "images_bucket" {
     ]
     resources = [
       "${aws_s3_bucket.images.arn}/img/*",
-      "${aws_s3_bucket.images.arn}/index.html"
+      "${aws_s3_bucket.images.arn}/index.html",
+      "${aws_s3_bucket.images.arn}/favicon.ico"
     ]
 
     principals {
