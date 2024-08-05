@@ -60,8 +60,7 @@ resource "aws_lambda_function" "link_creator" {
 
   environment {
     variables = {
-      BUCKET_NAME = aws_s3_bucket.images.bucket
-      IMAGES_HOSTNAME = aws_route53_record.images.name
+      PYTHONUNBUFFERED: "1"
     }
   }
 
