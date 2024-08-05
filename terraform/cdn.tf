@@ -40,13 +40,5 @@ resource "aws_cloudfront_distribution" "images" {
     min_ttl                = 86400
     max_ttl                = 31536000
     default_ttl            = 31536000 # cache for a year by default
-
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
   }
 }
