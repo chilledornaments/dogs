@@ -13,4 +13,4 @@ For OIDC role assumption to work, these env vars must be set in the workspace:
 
 ## Notes
 
-- Not using SQS between S3 and Lambda because $
+- Not using SQS between S3 and Lambda because $. It would help with batching though
