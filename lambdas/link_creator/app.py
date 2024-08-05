@@ -1,86 +1,88 @@
 import boto3
-import os
-import uuid
-
 from typing import List
 
-BUCKET_NAME = os.environ["BUCKET_NAME"]
-IMAGES_HOSTNAME = os.environ["HOSTNAME"]
 DESTINATION_PREFIX = "img"
+IMAGE_INDEX_S3_KEY_NAME = "image_map.txt"
 
 s3_client = boto3.client('s3')
 
-HTML_TOP = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dogs!</title>
-</head>
-<body>
-    <h1>Links</h1>
-"""
 
-HTML_BOTTOM = """
-    </ul>
-</body>
-</html>
-"""
-
-
-def generate_index_html(html_body: str, new_links: List[str]) -> str:
-    new_file = HTML_TOP
-    
-    for i in html_body.readlines():
-        if i.startswith("<li>"):
-            new_file += i
-    
-    for i in new_links:
-        new_file += i
-
-    new_file += HTML_BOTTOM
-
-    return new_file
-
-
-def update_index_file(links: List[str]):
-    # download index file
-    current_index = s3_client.get_object(Bucket=BUCKET_NAME, Key="index.html")["Body"].read()
-    # TODO check if file exists by hash??
-    new_file = generate_html_link(current_index, links)
-
-    s3_client.put_object()
-
-def generate_html_link(u: uuid.UUID):
-    return f"<li><a href=\"https://{IMAGES_HOSTNAME}/img/{u}\" target=\"_blank\" {u}</a></li>"
-
-
-def move_object(obj_key: str) -> uuid.UUID:
-    u = str(uuid.uuid4())
-    s3_client.copy_object(
-        ACL="private",
-        Bucket=BUCKET_NAME,
-        CopySource=f"{BUCKET_NAME}/{obj_key}",
-        Key=f"{DESTINATION_PREFIX}/{u}"
+def get_current_records(bucket: str) -> List[str]:
+    o = s3_client.get_object(
+        Bucket=bucket,
+        Key=IMAGE_INDEX_S3_KEY_NAME
     )
 
-    return u
+    object_contents = o["Body"].read().decode('utf-8')
+
+    file_hashes = []
+
+    for i in object_contents.split("|"):
+        if i != "":
+            file_hashes.append(i)
+
+    return file_hashes
+
+
+def add_new_records(bucket: str, current_records: List[str], new_records: List[str]):
+    body = ""
+
+    for c in current_records:
+        body += c + "|"
+
+    for new_record in new_records:
+        # is it worth checking?
+        if new_record not in current_records:
+            body += new_record + "|"
+
+    s3_client.put_object(
+        Bucket=bucket,
+        ACL="private",
+        # cut the last character, which will be "|"
+        Body=body[0:-1].encode(),
+        Key=IMAGE_INDEX_S3_KEY_NAME
+    )
+
+    print("updated map object")
+
+
+def move_object(bucket: str, obj_key: str, etag: str):
+    s3_client.copy_object(
+        ACL="private",
+        Bucket=bucket,
+        CopySource=f"{bucket}/{obj_key}",
+        Key=f"{DESTINATION_PREFIX}/{etag}"
+    )
+
+    print("moved object")
+
 
 def handler(event, context):
-    new_uuids = []
-    new_links = []
+    new_etags = []
+    # We'll only receive notifications from one bucket, so we only need to look at the first object to determine the bucket name
+    bucket = event['Records'][0]['s3']['bucket']['name']
 
     for record in event['Records']:
         try:
+            # etag is a "hash of the object. The ETag reflects changes only to the contents of an object, not its metadata"
+            # meaning its a reliable-enough hash for use in identifying an image
+            # https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
+            etag = record['s3']['object']['eTag']
             k = record['s3']['object']['key']
-            moved_object_uuid = move_object(k)
-            new_uuids.append(moved_object_uuid)
-        except Exception as e:
-            print(f"error moving object - {e}")
-    
-    for u in new_uuids:
-        new_links.append(generate_html_link(u))
+            move_object(bucket, k, etag)
+            new_etags.append(etag)
+        except:
+            print("failed to copy object")
+            raise
 
-    
+    try:
+        current_records = get_current_records(bucket)
+    except:
+        print("failed to get current records")
 
+    try:
+        add_new_records(bucket, current_records, new_etags)
+    except:
+        print("failed to add new records")
+
+    print(f"added {len(new_etags)} new images")
