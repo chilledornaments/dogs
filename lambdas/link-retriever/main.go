@@ -10,14 +10,13 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+const (
+	imageMapFileName = "image_map.txt"
+)
+
 type ResponseWithLink struct {
 	Id   int    `json:"id"`
 	Link string `json:"link"`
-}
-
-type Image struct {
-	Id   int    `json:"id"`
-	Path string `json:"Path"`
 }
 
 type Config struct {
@@ -26,22 +25,17 @@ type Config struct {
 }
 
 var config Config
-var ddbClient TODO
 
-// TODO add dynamodb client
-
-func randomImageLink() (Image, error) {
-	i := Image{
-		Id:   1,
-		Path: "foo",
-	}
+func randomImage() (int, error) {
+	// TODO download image_map.txt file
+	i := 1
 	return i, nil
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	fmt.Println("handling request ", request.Path)
 
-	image, err := randomImageLink()
+	image, err := randomImage()
 
 	if err != nil {
 		fmt.Println("error retrieving random link - ", err.Error())
