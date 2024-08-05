@@ -2,11 +2,6 @@ resource "aws_s3_bucket" "images" {
   bucket_prefix = "dog-api"
 }
 
-resource "aws_s3_bucket_acl" "images" {
-  bucket = aws_s3_bucket.images.id
-  acl    = "private"
-}
-
 resource "aws_s3_bucket_policy" "images" {
   bucket = aws_s3_bucket.images.id
 
@@ -63,7 +58,7 @@ rule {
   }
 
   transition {
-    days = 3
+    days = 30 # 30 is minimum
     storage_class = "STANDARD_IA"
   }
 }
