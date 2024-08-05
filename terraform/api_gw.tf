@@ -17,14 +17,8 @@ resource "aws_api_gateway_domain_name" "link_retriever" {
   }
 }
 
-resource "aws_api_gateway_resource" "link_retriever_api" {
+resource "aws_api_gateway_resource" "link_retriever_random" {
   parent_id   = aws_api_gateway_rest_api.link_retriever.root_resource_id
-  path_part   = "api"
-  rest_api_id = aws_api_gateway_rest_api.link_retriever.id
-}
-
-resource "aws_api_gateway_resource" "link_retriever_api_random" {
-  parent_id   = aws_api_gateway_resource.link_retriever_api.id
   path_part   = "random"
   rest_api_id = aws_api_gateway_rest_api.link_retriever.id
 }
@@ -65,4 +59,10 @@ resource "aws_api_gateway_stage" "v1" {
   deployment_id = aws_api_gateway_deployment.link_retriever.id
   rest_api_id   = aws_api_gateway_rest_api.link_retriever.id
   stage_name    = "v1"
+}
+
+resource "aws_api_gateway_base_path_mapping" "api" {
+  api_id      = aws_api_gateway_rest_api.link_retriever.id
+  stage_name  = aws_api_gateway_stage.v1.stage_name
+  domain_name = aws_api_gateway_domain_name.link_retriever.domain_name
 }
