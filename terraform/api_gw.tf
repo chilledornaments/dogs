@@ -30,6 +30,16 @@ resource "aws_api_gateway_method" "link_retriever_get_random" {
   rest_api_id   = aws_api_gateway_rest_api.link_retriever.id
 }
 
+resource "aws_api_gateway_method_settings" "link_retriever_get_random" {
+  rest_api_id = aws_api_gateway_rest_api.link_retriever.id
+  stage_name  = aws_api_gateway_stage.v1.stage_name
+  method_path = "${aws_api_gateway_resource.link_retriever_random.path}/${aws_api_gateway_method.link_retriever_get_random.http_method}"
+
+  settings {
+    throttling_rate_limit = 25
+  }
+}
+
 resource "aws_api_gateway_integration" "link_retriever_lambda" {
   http_method             = aws_api_gateway_method.link_retriever_get_random.http_method
   resource_id             = aws_api_gateway_resource.link_retriever_random.id
@@ -61,8 +71,10 @@ resource "aws_api_gateway_stage" "v1" {
   stage_name    = "v1"
 }
 
+# Note: when you map a custom domain to a stage without a `base_path`, requests to the custom domain must omit the stage
 resource "aws_api_gateway_base_path_mapping" "api" {
   api_id      = aws_api_gateway_rest_api.link_retriever.id
   stage_name  = aws_api_gateway_stage.v1.stage_name
   domain_name = aws_api_gateway_domain_name.link_retriever.domain_name
+  base_path   = aws_api_gateway_stage.v1.stage_name
 }
