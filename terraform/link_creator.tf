@@ -42,7 +42,7 @@ resource "aws_iam_role_policy_attachment" "link_creator" {
   policy_arn = aws_iam_policy.link_creator.arn
 }
 
-resource "aws_iam_role_policy_attachment" "link_creator" {
+resource "aws_iam_role_policy_attachment" "link_creator_managed_policies" {
   for_each = toset(local.link_creator_managed_policies)
 
   role       = aws_iam_role.link_creator.name
