@@ -4,7 +4,7 @@ resource "aws_api_gateway_rest_api" "link_retriever" {
   disable_execute_api_endpoint = true
 
   endpoint_configuration {
-    types = [ "REGIONAL" ]
+    types = ["REGIONAL"]
   }
 }
 

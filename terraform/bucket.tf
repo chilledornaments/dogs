@@ -31,7 +31,7 @@ resource "aws_s3_bucket_notification" "images_to_link_creator" {
   }
 }
 
-resource "aws_s3_object" "seed_file" {
+resource "aws_s3_object" "image_map_file" {
   bucket  = aws_s3_bucket.images.bucket
   key     = local.image_map_file_name
   content = ""
