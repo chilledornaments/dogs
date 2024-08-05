@@ -22,8 +22,6 @@ resource "aws_s3_bucket_policy" "images" {
 
 # NOTE: only one `aws_s3_bucket_notification` per bucket is supported
 resource "aws_s3_bucket_notification" "images_to_link_creator" {
-  count = 0
-  
   bucket = aws_s3_bucket.images.id
 
   lambda_function {

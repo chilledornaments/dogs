@@ -1,7 +1,7 @@
 /*
-This is the Python Lambda that is executed when an object is uploaded to the `raw/` path in the image bucket
+This is the Python Lambda that is executed when an object is uploaded to the `upload/` path in the image bucket
 
-It then updates the `index.html` file to include the new image
+It copies the image to the `img/` prefix and updates the "image_map.txt" file 
 */
 
 resource "aws_iam_role" "link_creator" {
