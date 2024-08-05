@@ -1,13 +1,21 @@
 data "aws_route53_zone" "dogs" {
-  name = "dogs.chilledornaments.com"
+  name = "${var.subdomain}.${var.top_level_domain}"
+}
+
+variable "subdomain" {
+  type = string
+}
+
+variable "top_level_domain" {
+  type = string
 }
 
 resource "aws_acm_certificate" "dogs" {
   provider = aws.useast1
 
-  domain_name = "dogs.chilledornaments.com"
+  domain_name = "${var.subdomain}.${var.top_level_domain}"
   subject_alternative_names = [
-    "img.dogs.chilledornaments.com",
+    "img.${var.subdomain}.${var.top_level_domain}",
   ]
   validation_method = "DNS"
 }
