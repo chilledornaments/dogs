@@ -7,6 +7,7 @@ It copies the image to the `img/` prefix and updates the "image_map.txt" file
 resource "aws_cloudwatch_log_group" "link_creator" {
   name = "/aws/lambda/${aws_lambda_function.link_creator.function_name}"
   retention_in_days = 7
+  # I'd use KMS key to encrypt this but I don't want to spend the money on a custom KMS key
 }
 
 resource "aws_iam_role" "link_creator" {
@@ -36,9 +37,16 @@ resource "aws_iam_policy" "link_creator" {
   policy = data.aws_iam_policy_document.link_creator.json
 }
 
-resource "aws_iam_role_policy_attachment" "name" {
+resource "aws_iam_role_policy_attachment" "link_creator" {
   role       = aws_iam_role.link_creator.name
   policy_arn = aws_iam_policy.link_creator.arn
+}
+
+resource "aws_iam_role_policy_attachment" "link_creator" {
+  for_each = toset(local.link_creator_managed_policies)
+
+  role       = aws_iam_role.link_creator.name
+  policy_arn = each.value
 }
 
 resource "aws_lambda_function" "link_creator" {
