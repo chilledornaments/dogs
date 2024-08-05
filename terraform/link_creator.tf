@@ -4,6 +4,11 @@ This is the Python Lambda that is executed when an object is uploaded to the `up
 It copies the image to the `img/` prefix and updates the "image_map.txt" file 
 */
 
+resource "aws_cloudwatch_log_group" "link_creator" {
+  name = "/aws/lambda/${aws_lambda_function.link_creator.function_name}"
+  retention_in_days = 7
+}
+
 resource "aws_iam_role" "link_creator" {
   name               = "dog-api-link-creator"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
