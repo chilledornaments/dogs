@@ -19,7 +19,7 @@ variable "destroy_bucket_objects_on_delete" {
   default = false
 }
 
-variable "create_github_actions_resources" {
+variable "create_environment_file" {
   type    = bool
-  default = true
+  default = false
 }
