@@ -13,3 +13,8 @@ variable "destroy_bucket_objects_on_delete" {
   type    = bool
   default = false
 }
+
+variable "create_github_actions_resources" {
+  type    = bool
+  default = true
+}
