@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: terraform/
     steps:
-    - name: checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
     - name: Configure aws credentials
       uses: aws-actions/configure-aws-credentials@v3
@@ -39,5 +39,8 @@ jobs:
         # use local state
         cp fixtures/test_backend.tf backend.tf
         terraform init
+    - name: Terraform plan
+      run: |
+        terraform plan -var-file=./fixtures/test.tfvars
       
 
