@@ -13,6 +13,7 @@ on:
 env:
   AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
   AWS_REGION: us-east-2
+  PYTHON_VERSION: "3.11"
 
 jobs:
   stand_up_infra:
@@ -33,14 +34,24 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: "1.9"  
+        terraform_version: "1.9"
     - name: Terraform init
       run: |
         # use local state
         cp fixtures/test_backend.tf backend.tf
         terraform init
-    - name: Terraform plan
+    - name: Terraform apply
       run: |
-        terraform plan -var-file=./fixtures/test.tfvars
+        terraform apply -var-file=./fixtures/test.tfvars -auto-approve
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    # TODO move these steps to actions, then call them from here
+    - name: Build link-creator
+      run: |
+        pushd ../lambdas/link_creator/
+        bash scripts/build_zip.sh
+        
+
       
 
