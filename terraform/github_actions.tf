@@ -6,9 +6,9 @@ locals {
     "dog-api",
   ]
 
-  thumbprint_list = [
+  thumbprint_list = var.create_github_actions_resources ? [
     data.tls_certificate.github_actions_oidc_jwks[0].certificates[0].sha1_fingerprint
-  ]
+  ] : []
 
   client_id_list = ["sts.amazonaws.com"]
 

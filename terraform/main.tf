@@ -2,7 +2,7 @@ locals {
   default_tags = {
     project      = "dog-api"
     tf_workspace = terraform.workspace
-    environment  = "production"
+    environment  = var.environment
   }
 
   route53_zone_id = data.aws_route53_zone.dogs.id
