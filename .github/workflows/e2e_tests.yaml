@@ -11,7 +11,7 @@ on:
       - initial
 
 env:
-  AWS_ROLE_ARN: ${{ secrets.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
+  AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
   AWS_REGION: us-east-2
 
 jobs:
