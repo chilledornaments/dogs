@@ -1,6 +1,10 @@
 # dog-api
 Random pictures of my dogs!
 
+
+## View it live
+View the [live application](https://img.dogs.chilledornaments.com)
+
 ## Terraform
 
 ### Workspace env vars
