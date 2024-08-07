@@ -1,4 +1,4 @@
-# dog-api
+# dog
 Random pictures of my dogs!
 
 
