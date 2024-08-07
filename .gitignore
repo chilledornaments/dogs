@@ -1,0 +1,12 @@
+# tf
+.terraform
+*.tfstate*
+
+# python
+venv
+lambdas/link_creator/package
+app.zip
+# go
+
+# images
+/img

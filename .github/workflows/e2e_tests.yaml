@@ -1,0 +1,57 @@
+name: Integration Tests
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - initial
+
+env:
+  AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
+  AWS_REGION: us-east-2
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  stand_up_infra:
+    runs-on: ubuntu-latest
+    name: Stand up infrastructure
+    defaults:
+      run:
+        working-directory: terraform/
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: ${{ env.AWS_ROLE_ARN }}
+        role-session-name: github-actions
+        aws-region: ${{ env.AWS_REGION }}
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.9"
+    - name: Terraform init
+      run: |
+        # use local state
+        cp fixtures/test_backend.tf backend.tf
+        terraform init
+    - name: Terraform apply
+      run: |
+        terraform apply -var-file=./fixtures/test.tfvars -auto-approve
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    # TODO move these steps to actions, then call them from here
+    - name: Build link-creator
+      run: |
+        pushd ../lambdas/link_creator/
+        bash scripts/build_zip.sh
+        
+
+      
+

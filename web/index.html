@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dogs</title>
+    <style>
+        /* Optional: Add some styling for better appearance */
+        #image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        img {
+            width: 75%; /* Scale width to 75% of original size (25% reduction) */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <h1>Retrieving dog picture</h1>
+    <div id="image-container">
+        <img id="api-image" alt="Cute dog" />
+    </div>
+
+    <script>
+        const apiUrl = 'https://api.dogs.chilledornaments.com/v1/random';
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const imageUrl = data.link;
+                document.getElementById('api-image').src = imageUrl;
+            })
+            .catch(error => console.error('Error fetching the image:', error));
+    </script>
+</body>
+</html>
