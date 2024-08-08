@@ -86,5 +86,4 @@ jobs:
     - name: Destroy infra
       if: always()
       run: |
-        aws s3 rm --recursive s3://${{ steps.terraform_apply.outputs.bucket_name }}
         terraform destroy -var-file=./fixtures/test.tfvars -auto-approve 
