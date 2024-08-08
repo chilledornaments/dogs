@@ -8,12 +8,13 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - initial
+      - github-actions
 
 env:
   AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
   AWS_REGION: us-east-2
   PYTHON_VERSION: "3.11"
+  LINK_CREATOR_LAMBDA_NAME: dog-api-link-creator
 
 jobs:
   stand_up_infra:
@@ -47,11 +48,12 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     # TODO move these steps to actions, then call them from here
-    - name: Build link-creator
+    # TODO caching
+    - name: Build and deploy link-creator
       run: |
         pushd ../lambdas/link_creator/
         bash scripts/build_zip.sh
-        
-
-      
-
+        aws lambda update-function-code \
+        --function-name ${{ env.LINK_CREATOR_LAMBDA_NAME }} \
+        --zip-file ./app.zip
+        popd
