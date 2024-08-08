@@ -61,7 +61,7 @@ jobs:
         bash scripts/build_zip.sh
         aws lambda update-function-code \
         --function-name ${{ env.LINK_CREATOR_LAMBDA_NAME }} \
-        --zip-file ./app.zip
+        --zip-file fileb://./app.zip
         popd
     - uses: actions/setup-go@v5
       with:
@@ -76,13 +76,16 @@ jobs:
         zip app.zip bootstrap
         aws lambda update-function-code \
         --function-name ${{ env.LINK_RETRIEVER_LAMBDA_NAME }} \
-        --zip-file ./app.zip
+        --zip-file fileb://./app.zip
         popd
       env:
         GOARCH: arm64
     - name: Upload test file
       run: |
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
+    - name: Run tests
+      run: |
+        curl ${{ steps.terraform_apply.outputs.bucket_name }}/v1/random
     - name: Destroy infra
       if: always()
       run: |
