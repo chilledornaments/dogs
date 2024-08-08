@@ -12,7 +12,7 @@ on:
 
 env:
   AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
-  AWS_REGION: us-east-2
+  AWS_REGION: us-west-2
   PYTHON_VERSION: "3.11"
   LINK_CREATOR_LAMBDA_NAME: dog-api-link-creator
   LINK_RETRIEVER_LAMBDA_NAME: dog-api-link-retriever
