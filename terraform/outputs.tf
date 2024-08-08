@@ -1,5 +1,9 @@
-output "image_url" {
+output "api_url" {
   value = "https://${aws_api_gateway_base_path_mapping.api.domain_name}/${aws_api_gateway_base_path_mapping.api.base_path}/random"
+}
+
+output "bucket_name" {
+  value = aws_s3_bucket.images.bucket
 }
 
 resource "local_file" "environment_file" {

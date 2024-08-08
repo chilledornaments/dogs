@@ -15,6 +15,8 @@ env:
   AWS_REGION: us-east-2
   PYTHON_VERSION: "3.11"
   LINK_CREATOR_LAMBDA_NAME: dog-api-link-creator
+  LINK_RETRIEVER_LAMBDA_NAME: dog-api-link-retriever
+  TERRAFORM_ENVIRONMENT_FILE: /tmp/test_terraform_environment
 
 jobs:
   stand_up_infra:
@@ -42,11 +44,15 @@ jobs:
         cp fixtures/test_backend.tf backend.tf
         terraform init
     - name: Terraform apply
+      id: terraform_apply
       run: |
         terraform apply -var-file=./fixtures/test.tfvars -auto-approve
+        echo "bucket_name=$(terraform output -raw bucket_name)" >> $GITHUB_OUTPUT
+        echo "api_url=$(terraform output -raw api_url)" >> $GITHUB_OUTPUT
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+        cache: pip
     # TODO move these steps to actions, then call them from here
     # TODO caching
     - name: Build and deploy link-creator
@@ -57,3 +63,28 @@ jobs:
         --function-name ${{ env.LINK_CREATOR_LAMBDA_NAME }} \
         --zip-file ./app.zip
         popd
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '^1.21'
+        cache-dependency-path: "**/*.sum"
+    # TODO move these steps to actions, then call them from here
+    # TODO caching
+    - name: Build and deploy link-retriever
+      run: |
+        pushd ../lambdas/link-retriever
+        go build -o bootstrap
+        zip app.zip bootstrap
+        aws lambda update-function-code \
+        --function-name ${{ env.LINK_RETRIEVER_LAMBDA_NAME }} \
+        --zip-file ./app.zip
+        popd
+      env:
+        GOARCH: arm64
+    - name: Upload test file
+      run: |
+        aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
+    - name: Destroy infra
+      if: always()
+      run: |
+        aws s3 rm --recursive ${{ steps.terraform_apply.outputs.bucket_name }}
+        terraform destroy -var-file=./fixtures/test.tfvars -auto-approve 
