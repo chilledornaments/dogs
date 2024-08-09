@@ -53,7 +53,7 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: pip
-    - uses: ./github/actions/link-creator-test-build
+    - uses: ./.github/actions/link-creator-test-build
       id: link_creator
     - name: Deploy link-creator
       run: |    
