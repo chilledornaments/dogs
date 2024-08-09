@@ -68,13 +68,13 @@ jobs:
     - name: Build and test link-retriever
       uses: ./.github/actions/link-retriever-test-build
       id: link_retriever
+      env:
+        GOARCH: arm64
     - name: Build and deploy link-retriever
       run: |
         aws lambda update-function-code \
         --function-name ${{ env.LINK_RETRIEVER_LAMBDA_NAME }} \
         --zip-file fileb://${{ steps.link_retriever.outputs.artifact-path }}
-      env:
-        GOARCH: arm64
     - name: Upload test file
       run: |
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
