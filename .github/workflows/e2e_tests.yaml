@@ -46,7 +46,7 @@ jobs:
     - name: Terraform apply
       id: terraform_apply
       run: |
-        terraform apply -var-file=./fixtures/test.tfvars -auto-approve
+        terraform apply -var-file=./fixtures/test.tfvars -auto-approve || terraform apply -var-file=./fixtures/test.tfvars -auto-approve
         echo "bucket_name=$(terraform output -raw bucket_name)" >> $GITHUB_OUTPUT
         echo "api_url=$(terraform output -raw api_url)" >> $GITHUB_OUTPUT
     - uses: actions/setup-python@v5
@@ -85,7 +85,7 @@ jobs:
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
     - name: Run tests
       run: |
-        curl ${{ steps.terraform_apply.outputs.bucket_name }}/v1/random
+        curl ${{ steps.terraform_apply.outputs.bucket_name }}/v1/random | jq
     - name: Destroy infra
       if: always()
       run: |
