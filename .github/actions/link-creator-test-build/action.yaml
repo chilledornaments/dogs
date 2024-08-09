@@ -22,11 +22,12 @@ runs:
       shell: bash
       run: |
         echo "running unit tests"
+        pwd
     - name: Build link-creator
       id: artifact
       shell: bash
       run: |
-        pushd ../lambdas/link_creator/
+        pushd lambdas/link_creator/
         bash scripts/build_zip.sh
         file_name="/tmp/$(date +%s)"
         echo "artifact-path=$(echo $file_name)" >> $GITHUB_OUTPUT
