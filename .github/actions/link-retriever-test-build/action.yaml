@@ -17,11 +17,6 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
         cache-dependency-path: "lambdas/link-retriever/*.sum"
-    - name: Cache permissions
-      shell: bash
-      run: |
-        chmod -R 0755 \
-        ~/go/pkg/mod 
     - name: Unit tests
       shell: bash
       run: |
