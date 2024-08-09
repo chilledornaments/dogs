@@ -81,7 +81,7 @@ jobs:
       run: |
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
     - name: Run tests
-      # TODO write with pytest
+      # TODO write with pytest, check object in S3, check API response
       # TODO create action
       run: |
         (curl ${{ steps.terraform_apply.outputs.api_url }}/v1/random | jq .link) || exit 1
