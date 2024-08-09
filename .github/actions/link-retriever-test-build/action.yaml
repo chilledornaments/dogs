@@ -17,6 +17,14 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
         cache-dependency-path: "lambdas/link-retriever/*.sum"
+    - name: Cache permissions
+      shell: bash
+      run: |
+        chmod -R 0755 \
+        ~/go/pkg/mod \
+        ~/.cache/go-build \
+        ~/.cache/golangci-lint \
+        ~/.cache/buf/
     - name: Unit tests
       shell: bash
       run: |
@@ -26,8 +34,7 @@ runs:
       shell: bash
       run: |
         pushd lambdas/link-retriever/
-        # grep filters out cache-related errors-that-aren't-actually-errors
-        go build -o bootstrap 2>&1 |grep -v 'Cannot open: File exists'
+        go build -o bootstrap
         zip app.zip bootstrap
         file_name="/tmp/$(date +%s).zip"
         mv app.zip $file_name
