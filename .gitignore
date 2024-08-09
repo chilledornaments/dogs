@@ -10,3 +10,6 @@ app.zip
 
 # images
 /img
+
+__pycache__
+.pytest_cache
