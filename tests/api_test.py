@@ -12,6 +12,8 @@ EXPECTED_HEADER_MAP = {
     "Access-Control-Allow-Origin":  "*",
 }
 
+print(f"Running tests against '{API_URL}'")
+
 
 def make_api_call() -> requests.Response:
     return requests.get(API_URL, timeout=3)
