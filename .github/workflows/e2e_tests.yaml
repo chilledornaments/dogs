@@ -73,7 +73,6 @@ jobs:
         aws lambda update-function-code \
         --function-name ${{ env.LINK_RETRIEVER_LAMBDA_NAME }} \
         --zip-file fileb://${{ steps.link_retriever.outputs.artifact-path }}
-        popd
       env:
         GOARCH: arm64
     - name: Upload test file
