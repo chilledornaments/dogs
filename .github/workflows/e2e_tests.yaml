@@ -6,9 +6,6 @@ permissions:
 
 on:
   workflow_dispatch: {}
-  push:
-    branches:
-      - github-actions
 
 env:
   AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
