@@ -84,8 +84,10 @@ jobs:
       run: |
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
     - name: Run tests
+      # TODO write with pytest
+      # TODO create action
       run: |
-        curl ${{ steps.terraform_apply.outputs.bucket_name }}/v1/random | jq
+        (curl ${{ steps.terraform_apply.outputs.api_url }}/v1/random | jq .link) || exit 1
     - name: Destroy infra
       if: always()
       run: |
