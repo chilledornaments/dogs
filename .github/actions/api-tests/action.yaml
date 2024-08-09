@@ -1,5 +1,5 @@
-name: integration tests
-description: 'integration test suite'
+name: API tests
+description: 'API test suite'
 inputs:
   python-version:
     required: false
@@ -18,7 +18,7 @@ runs:
       shell: bash
       run: |
         pip install -r tests/requirements.txt
-    - name: Integration tests
+    - name: API tests
       shell: bash
       run: |
         pytest -v -s ./tests/

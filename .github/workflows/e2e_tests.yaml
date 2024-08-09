@@ -78,9 +78,9 @@ jobs:
     - name: Upload test file
       run: |
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
-    - name: Run integration tests
-      uses: ./.github/actions/integration-tests
-      id: integration_tests
+    - name: Run API tests
+      uses: ./.github/actions/api-tests
+      id: api_tests
       env:
         API_URL: ${{ steps.terraform_apply.outputs.api_url }}
     - name: Destroy infra
