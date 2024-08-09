@@ -1,4 +1,4 @@
-name: Integration Tests
+name: End to end tests
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -21,7 +21,7 @@ env:
 jobs:
   run_tests:
     runs-on: ubuntu-latest
-    name: Stand up infrastructure
+    name: End to end tests
     defaults:
       run:
         working-directory: terraform/
@@ -89,7 +89,7 @@ jobs:
         pytest -v -s ./
         popd
       env:
-        API_URL: ${{ steps.terraform_apply.outputs.api_url }}/v1
+        API_URL: ${{ steps.terraform_apply.outputs.api_url }}
     - name: Destroy infra
       if: always()
       run: |

@@ -4,8 +4,6 @@ import json
 import requests
 
 API_URL = os.environ["API_URL"]
-RANDOM_ROUTE = "/random"
-RANDOM_URL = f"{API_URL}{RANDOM_ROUTE}"
 TIMEOUT = 3
 
 EXPECTED_HEADER_MAP = {
@@ -16,7 +14,7 @@ EXPECTED_HEADER_MAP = {
 
 
 def make_api_call() -> requests.Response:
-    return requests.get(RANDOM_URL, timeout=3)
+    return requests.get(API_URL, timeout=3)
 
 def test_api_call_returns_expected_json():
     r = make_api_call()
