@@ -1,7 +1,7 @@
-import pytest
 import os
-import json
 import requests
+import time
+from flaky import flaky
 
 API_URL = os.environ["API_URL"]
 TIMEOUT = 3
@@ -15,6 +15,11 @@ EXPECTED_HEADER_MAP = {
 print(f"Running tests against '{API_URL}'")
 
 
+def delay_rerun(*args):
+    time.sleep(1)
+    return True
+
+
 def make_api_call() -> requests.Response:
     return requests.get(API_URL, timeout=3)
 
@@ -25,7 +30,7 @@ def test_api_call_returns_expected_json():
     assert len(r.json().get("link")) > 0
 
 
-@pytest.mark.flaky(max_runs=3)
+@flaky(max_runs=3, rerun_filter=delay_rerun)
 def test_api_call_returns_expected_headers():
     r = make_api_call()
 
