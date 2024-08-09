@@ -1,0 +1,27 @@
+name: link-creator
+
+on:
+  pull_request:
+    branches:
+      - "main" 
+    paths:
+      - "lambdas/link_creator/*"
+      - ".github/actions/link-creator-test-build/action.yaml"
+      - ".github/workflows/link_creator.yaml"
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: Tests
+    defaults:
+      run:
+        working-directory: lambdas/link_creator
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Build and test link-creator
+      uses: ./.github/actions/link-creator-test-build
+      id: link_creator
