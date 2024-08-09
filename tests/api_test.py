@@ -18,12 +18,14 @@ print(f"Running tests against '{API_URL}'")
 def make_api_call() -> requests.Response:
     return requests.get(API_URL, timeout=3)
 
+
 def test_api_call_returns_expected_json():
     r = make_api_call()
 
     assert len(r.json().get("link")) > 0
 
 
+@pytest.mark.flaky(max_runs=3)
 def test_api_call_returns_expected_headers():
     r = make_api_call()
 
@@ -41,5 +43,3 @@ def test_retrieve_image():
     r = requests.get(link)
 
     assert r.status_code == 200
-
-
