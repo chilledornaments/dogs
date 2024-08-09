@@ -19,34 +19,15 @@ runs:
         cache: pip
     # TODO caching
     - name: Unit tests
+      shell: bash
       run: |
         echo "running unit tests"
     - name: Build link-creator
       id: artifact
+      shell: bash
       run: |
         pushd ../lambdas/link_creator/
         bash scripts/build_zip.sh
         file_name="/tmp/$(date +%s)"
         echo "artifact-path=$(echo $file_name)" >> $GITHUB_OUTPUT
         popd
-    # - name: Set Greeting
-    #   run: echo "Hello $INPUT_WHO_TO_GREET."
-    #   shell: bash
-    #   env:
-    #     INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
-
-    # - name: Random Number Generator
-    #   id: random-number-generator
-    #   run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
-    #   shell: bash
-
-    # - name: Set GitHub Path
-    #   run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-    #   shell: bash
-    #   env:
-    #     GITHUB_ACTION_PATH: ${{ github.action_path }}
-
-    # - name: Run goodbye.sh
-    #   run: goodbye.sh
-    #   shell: bash
-
