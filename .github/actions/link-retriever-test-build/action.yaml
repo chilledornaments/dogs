@@ -21,10 +21,7 @@ runs:
       shell: bash
       run: |
         chmod -R 0755 \
-        ~/go/pkg/mod \
-        ~/.cache/go-build \
-        ~/.cache/golangci-lint \
-        ~/.cache/buf/
+        ~/go/pkg/mod 
     - name: Unit tests
       shell: bash
       run: |
