@@ -20,7 +20,7 @@ runs:
         cache-dependency-path: |
           lambdas/link_creator/requirements.txt
     - id: python_cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: lambdas/link_creator/package
         key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('lambdas/link_creator/requirements.txt') }}
