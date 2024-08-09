@@ -17,7 +17,13 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
         cache: pip
-    # TODO caching
+        cache-dependency-path: |
+          lambdas/link_creator/requirements.txt
+    - id: python_cache
+      uses: actions/cache@v3
+      with:
+        path: lambdas/link_creator/package
+        key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('lambdas/link_creator/requirements.txt') }}
     - name: Unit tests
       shell: bash
       run: |
@@ -29,6 +35,7 @@ runs:
       run: |
         pushd lambdas/link_creator/
         bash scripts/build_zip.sh
-        file_name="/tmp/$(date +%s)"
+        file_name="/tmp/$(date +%s).zip"
+        mv app.zip $file_name
         echo "artifact-path=$(echo $file_name)" >> $GITHUB_OUTPUT
         popd
