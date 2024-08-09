@@ -27,3 +27,17 @@ def test_api_call_returns_expected_headers():
 
     for header, value in EXPECTED_HEADER_MAP.items():
         assert r.headers.get(header) == value
+
+
+def test_retrieve_image():
+    r = make_api_call()
+
+    assert len(r.json().get("link")) > 0
+
+    link = r.json().get("link")
+
+    r = requests.get(link)
+
+    assert r.status_code == 200
+
+
