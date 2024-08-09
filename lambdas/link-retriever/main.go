@@ -22,6 +22,12 @@ const (
 	imageMapFileName = "image_map.txt"
 )
 
+var (
+	config    Config
+	s3Client  s3.Client
+	imageKeys []string
+)
+
 type ResponseWithLink struct {
 	Id   string `json:"id"`
 	Link string `json:"link"`
@@ -31,12 +37,6 @@ type Config struct {
 	domainName string
 	bucketName string
 }
-
-var config Config
-
-var s3Client s3.Client
-
-var imageKeys []string
 
 func newS3Client() error {
 	c, err := awsConfig.LoadDefaultConfig(context.TODO())
