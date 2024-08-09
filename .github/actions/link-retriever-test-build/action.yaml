@@ -26,7 +26,8 @@ runs:
       shell: bash
       run: |
         pushd lambdas/link-retriever/
-        go build -o bootstrap
+        # grep filters out cache-related errors-that-aren't-actually-errors
+        go build -o bootstrap  |grep -v 'Cannot open: File exists'
         zip app.zip bootstrap
         file_name="/tmp/$(date +%s).zip"
         mv app.zip $file_name
