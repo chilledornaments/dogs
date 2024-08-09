@@ -28,7 +28,6 @@ runs:
       shell: bash
       run: |
         echo "running unit tests"
-        pwd
     - name: Build link-creator
       id: artifact
       shell: bash
