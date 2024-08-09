@@ -19,6 +19,7 @@ runs:
     #   with:
     #     key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('tests/requirements.txt') }}
     - name: Install dependencies
+      shell: bash
       run: |
         pip install -r tests/requirements.txt
     - name: Integration tests
