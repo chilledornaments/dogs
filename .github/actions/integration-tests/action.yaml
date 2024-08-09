@@ -1,0 +1,28 @@
+name: integration tests
+description: 'integration test suite'
+inputs:
+  python-version:
+    required: false
+    default: '3.11'
+  
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: |
+          tests/requirements.txt
+    # - id: cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('tests/requirements.txt') }}
+    - name: Install dependencies
+      run: |
+        pip install -r tests/requirements.txt
+    - name: Integration tests
+      shell: bash
+      run: |
+        pytest -v -s ./tests/
+

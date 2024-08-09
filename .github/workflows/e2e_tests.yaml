@@ -65,16 +65,14 @@ jobs:
       with:
         go-version: '^1.21'
         cache-dependency-path: "**/*.sum"
-    # TODO move these steps to actions, then call them from here
-    # TODO caching
+    - name: Build and test link-retriever
+      uses: ./.github/actions/link-retriever-test-build
+      id: link_retriever
     - name: Build and deploy link-retriever
       run: |
-        pushd ../lambdas/link-retriever
-        go build -o bootstrap
-        zip app.zip bootstrap
         aws lambda update-function-code \
         --function-name ${{ env.LINK_RETRIEVER_LAMBDA_NAME }} \
-        --zip-file fileb://./app.zip
+        --zip-file fileb://${{ steps.link_retriever.outputs.artifact-path }}
         popd
       env:
         GOARCH: arm64
@@ -82,12 +80,8 @@ jobs:
       run: |
         aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
     - name: Run integration tests
-      # TODO create action
-      run: |
-        pushd ../tests/
-        pip install -r requirements.txt
-        pytest -v -s ./
-        popd
+      uses: ./.github/actions/integration-tests
+      id: integration_tests
       env:
         API_URL: ${{ steps.terraform_apply.outputs.api_url }}
     - name: Destroy infra
