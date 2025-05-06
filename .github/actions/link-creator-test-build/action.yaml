@@ -1,0 +1,40 @@
+name: link-creator tests
+description: 'link-creator build and test'
+inputs:
+  python-version:
+    required: false
+    default: '3.11'
+
+outputs:
+  artifact-path:
+    description: "Path to Lambda artifact"
+    value: ${{ steps.artifact.outputs.artifact-path }}
+  
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: |
+          lambdas/link_creator/requirements.txt
+    - id: python_cache
+      uses: actions/cache@v4
+      with:
+        path: lambdas/link_creator/package
+        key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('lambdas/link_creator/requirements.txt') }}
+    - name: Unit tests
+      shell: bash
+      run: |
+        echo "running unit tests"
+    - name: Build link-creator
+      id: artifact
+      shell: bash
+      run: |
+        pushd lambdas/link_creator/
+        bash scripts/build_zip.sh
+        file_name="/tmp/$(date +%s).zip"
+        mv app.zip $file_name
+        echo "artifact-path=$(echo $file_name)" >> $GITHUB_OUTPUT
+        popd

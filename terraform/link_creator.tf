@@ -56,7 +56,7 @@ resource "aws_lambda_function" "link_creator" {
   memory_size                    = 256
   timeout                        = 20
   handler                        = "app.handler"
-  reserved_concurrent_executions = 1
+  reserved_concurrent_executions = var.link_creator_max_concurrent_executions
 
   environment {
     variables = {

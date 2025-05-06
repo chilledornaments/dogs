@@ -23,3 +23,8 @@ variable "create_environment_file" {
   type    = bool
   default = false
 }
+
+variable "link_creator_max_concurrent_executions" {
+  type    = number
+  default = 1
+}

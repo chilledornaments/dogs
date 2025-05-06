@@ -4,5 +4,7 @@ aws = {
 
 domain = "test.dogs.chilledornaments.com"
 
-environment             = "test"
-create_environment_file = true
+environment                            = "test"
+create_environment_file                = true
+link_creator_max_concurrent_executions = null
+destroy_bucket_objects_on_delete       = true

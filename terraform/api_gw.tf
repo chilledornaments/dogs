@@ -15,6 +15,10 @@ resource "aws_api_gateway_domain_name" "link_retriever" {
   endpoint_configuration {
     types = ["REGIONAL"]
   }
+
+  depends_on = [
+    time_sleep.wait_for_acm
+  ]
 }
 
 resource "aws_api_gateway_resource" "link_retriever_random" {

@@ -1,0 +1,28 @@
+name: link-retriever
+
+on:
+  pull_request:
+    branches:
+      - "main" 
+    paths:
+      - "lambdas/link_retriever/*"
+      - ".github/actions/link-retriever-test-build/action.yaml"
+      - ".github/workflows/link_retriever.yaml"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: Tests
+    defaults:
+      run:
+        working-directory: lambdas/link-retriever
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Build and test link-retriever
+      uses: ./.github/actions/link-retriever-test-build
+      id: link_retriever
+      with:
+        go-version: "^1.21"
+      env:
+        GOARCH: arm64

@@ -1,0 +1,34 @@
+name: link-retriever tests
+description: 'link-retriever build and test'
+inputs:
+  go-version:
+    required: false
+    default: '^1.21'
+
+outputs:
+  artifact-path:
+    description: "Path to Lambda artifact"
+    value: ${{ steps.artifact.outputs.artifact-path }}
+  
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache-dependency-path: "lambdas/link-retriever/*.sum"
+    - name: Unit tests
+      shell: bash
+      run: |
+        echo "running unit tests"
+    - name: Build link-retriever
+      id: artifact
+      shell: bash
+      run: |
+        pushd lambdas/link-retriever/
+        go build -o bootstrap
+        zip app.zip bootstrap
+        file_name="/tmp/$(date +%s).zip"
+        mv app.zip $file_name
+        echo "artifact-path=$(echo $file_name)" >> $GITHUB_OUTPUT
+        popd

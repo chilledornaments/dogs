@@ -1,4 +1,4 @@
-name: Integration Tests
+name: End to end tests
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -6,19 +6,19 @@ permissions:
 
 on:
   workflow_dispatch: {}
-  push:
-    branches:
-      - initial
 
 env:
   AWS_ROLE_ARN: ${{ vars.INTEGRATION_TESTS_INFRA_AWS_ROLE_ARN }}
-  AWS_REGION: us-east-2
+  AWS_REGION: us-west-2
   PYTHON_VERSION: "3.11"
+  LINK_CREATOR_LAMBDA_NAME: dog-api-link-creator
+  LINK_RETRIEVER_LAMBDA_NAME: dog-api-link-retriever
+  TERRAFORM_ENVIRONMENT_FILE: /tmp/test_terraform_environment
 
 jobs:
-  stand_up_infra:
+  run_tests:
     runs-on: ubuntu-latest
-    name: Stand up infrastructure
+    name: End to end tests
     defaults:
       run:
         working-directory: terraform/
@@ -41,17 +41,46 @@ jobs:
         cp fixtures/test_backend.tf backend.tf
         terraform init
     - name: Terraform apply
+      id: terraform_apply
       run: |
-        terraform apply -var-file=./fixtures/test.tfvars -auto-approve
+        terraform apply -var-file=./fixtures/test.tfvars -auto-approve || terraform apply -var-file=./fixtures/test.tfvars -auto-approve
+        echo "bucket_name=$(terraform output -raw bucket_name)" >> $GITHUB_OUTPUT
+        echo "api_url=$(terraform output -raw api_url)" >> $GITHUB_OUTPUT
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-    # TODO move these steps to actions, then call them from here
-    - name: Build link-creator
+        cache: pip
+    - name: Build and test link-creator
+      uses: ./.github/actions/link-creator-test-build
+      id: link_creator
+    - name: Deploy link-creator
+      run: |    
+        aws lambda update-function-code \
+        --function-name ${{ env.LINK_CREATOR_LAMBDA_NAME }} \
+        --zip-file fileb://${{ steps.link_creator.outputs.artifact-path }}
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '^1.21'
+        cache-dependency-path: "**/*.sum"
+    - name: Build and test link-retriever
+      uses: ./.github/actions/link-retriever-test-build
+      id: link_retriever
+      env:
+        GOARCH: arm64
+    - name: Build and deploy link-retriever
       run: |
-        pushd ../lambdas/link_creator/
-        bash scripts/build_zip.sh
-        
-
-      
-
+        aws lambda update-function-code \
+        --function-name ${{ env.LINK_RETRIEVER_LAMBDA_NAME }} \
+        --zip-file fileb://${{ steps.link_retriever.outputs.artifact-path }}
+    - name: Upload test file
+      run: |
+        aws s3 cp --recursive ../.github/fixtures/ s3://${{ steps.terraform_apply.outputs.bucket_name }}/upload
+    - name: Run API tests
+      uses: ./.github/actions/api-tests
+      id: api_tests
+      env:
+        API_URL: ${{ steps.terraform_apply.outputs.api_url }}
+    - name: Destroy infra
+      if: always()
+      run: |
+        terraform destroy -var-file=./fixtures/test.tfvars -auto-approve 

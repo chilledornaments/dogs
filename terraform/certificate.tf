@@ -48,3 +48,11 @@ resource "aws_route53_record" "api_acm_validation" {
   type            = each.value.type
   zone_id         = local.route53_zone_id
 }
+
+resource "time_sleep" "wait_for_acm" {
+  create_duration = "30s"
+
+  depends_on = [
+    aws_route53_record.api_acm_validation
+  ]
+}
